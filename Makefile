@@ -22,7 +22,8 @@ deploy-kubernetes:
 deploy-local-path-provisioner:
 	mkdir -p workspace
 	cd workspace; git clone https://github.com/rancher/local-path-provisioner.git -b $(LOCAL_PATH_PROVISIONER_VERSION) local-path-provisioner || true
-	cd workspace/local-path-provisioner && helm install local-path-storage --namespace local-path-storage ./deploy/chart/local-path-provisioner --create-namespace
+	cd workspace/local-path-provisioner && helm install local-path-storage --namespace storage-system ./deploy/chart/local-path-provisioner --create-namespace
+	kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}';
 
 clean:
 	cp build/configs/inventory.ini workspace/kubespray/inventory/sample/inventory.ini
