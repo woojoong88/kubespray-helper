@@ -1,4 +1,5 @@
 KUBESPRAY_VERSION ?= master
+LOCAL_PATH_PROVISIONER_VERSION ?= master
 CNI ?= calico
 
 deploy-kubernetes:
@@ -17,6 +18,11 @@ deploy-kubernetes:
 		-e "{'kube_apiserver_node_port_range' : 2000-36767}" \
 		-e "{'dns_min_replicas' : 1}" \
 		cluster.yml -vvv
+
+deploy-local-path-provisioner:
+	mkdir -p workspace
+	cd workspace; git clone https://github.com/rancher/local-path-provisioner.git -b $(LOCAL_PATH_PROVISIONER_VERSION) local-path-provisioner || true
+	cd workspace/local-path-provisioner && helm install local-path-storage --namespace local-path-storage ./deploy/chart/local-path-provisioner --create-namespace
 
 clean:
 	cp build/configs/inventory.ini workspace/kubespray/inventory/sample/inventory.ini
